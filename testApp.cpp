@@ -112,6 +112,26 @@ void testApp::update(){
         }
     }
     }
+    
+    if(over == true){
+    
+    if (gameover.getPosition() > 0.9){
+        lastPlaySeq = true;
+        cout<<"game over played once"<<endl;
+    }
+    
+    if (lastPlaySeq == false) {
+        gameover.update();
+        cout<<"game over has not played once"<<endl;
+    }
+    else {
+        gameover.close();
+        over=false;
+        welcome = true;
+        welcomescreen.update();
+        cout<<"game should restart"<<endl;
+    }
+    }
         
 }
 
@@ -158,7 +178,7 @@ void testApp::draw(){
         gameplay.play();
     }
     
-    if (over == true) {
+    if (over == true && lastPlaySeq == false) {
         gameover.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
         gameover.play();
     }
