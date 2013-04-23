@@ -16,7 +16,7 @@ void testApp::setup(){
     ofAddListener(thinkGear.attentionChangeEvent, this, &testApp::attentionListener);
     
     alert.loadFont("font/DroidSansMono.ttf", 14, true, true);
-    alert.setLineHeight(18.0f);
+	alert.setLineHeight(18.0f);
 	alert.setLetterSpacing(1.037);
     
     
@@ -51,6 +51,13 @@ void testApp::update(){
     blur.setScale(ofMap(attention, 0.0, 100.0, 4, 1));
     blur.setRotation(ofMap(attention, 0, 100.0, -PI, PI));
     
+    if (welcome==true){
+        notplaying.loadImage("images/notplaying.png");
+    } else{
+        playing.loadImage("images/playing.png");
+
+    }
+    
     if (welcomescreen.getPosition() > 0.9){
         firstPlaySeq = true;
     }
@@ -76,8 +83,6 @@ void testApp::update(){
     
     if (incident == true){
         gameplay.update();
-
-        playing.loadImage("images/playing.png");
     }
     
         if (attention < threshold){
@@ -122,7 +127,7 @@ void testApp::update(){
 
         if (gameover.getPosition() > 0.9){
             lastPlaySeq = true;
-            
+            gameover.update();
         }
         
         if (lastPlaySeq == false) {
@@ -137,10 +142,7 @@ void testApp::update(){
         }
         }
         
-        if(welcome==true && over == false){
-            gameover.close();
-            welcomescreen.update();
-        }
+        
     }
     
     
@@ -151,14 +153,28 @@ void testApp::draw(){
     
     
     ofSetWindowTitle("Attention = " + ofToString(attention));
-    
+    if (welcome ==true){
+        ofEnableAlphaBlending();
+        notplaying.loadImage("images/notplaying.png");
+        notplaying.draw(100, 100);
+        ofDisableAlphaBlending();
+        cout<<"green"<<endl;
+    } else {
+        ofEnableAlphaBlending();
+        playing.loadImage("images/playing.png");
+        playing.draw(100, 100);
+        ofDisableAlphaBlending();
+        cout<<"red"<<endl;
+    }
     
     if (firstPlaySeq == false){
+        
         blur.draw();
         blur.begin();
         welcomescreen.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
         welcomescreen.play();
         blur.end();
+
     } else {
         if (attention < openThreshold) {
            blur.draw();
@@ -170,28 +186,15 @@ void testApp::draw(){
     }
     
 
-    if (incident == true && welcome == false && over==false){
-        ofEnableAlphaBlending();
-        gameplay.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
-        gameplay.play();
-        playing.draw(20, 20);
-        ofDisableAlphaBlending();
-        
-        
-    }
+   
     
     if (incident == true && welcome == false && extreme == true){
-        //blur.draw();
-        //blur.begin();
         ofEnableAlphaBlending();
         gameplay.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
         gameplay.play();
         float wave = sin(ofGetElapsedTimef());
         transparency.draw(ofGetWidth()/2 + (wave * 100), 20);
-        
         ofDisableAlphaBlending();
-       
-        //blur.end();
     }
     else if (incident == true && welcome == false){
         gameplay.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
@@ -201,7 +204,10 @@ void testApp::draw(){
     if (over == true && lastPlaySeq == false) {
         gameover.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
         gameover.play();
-    } else if ( over==true && lastPlaySeq == true){
+    }
+
+    
+    if (welcome == true && over == false){
         welcomescreen.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
         welcomescreen.play();
     }
