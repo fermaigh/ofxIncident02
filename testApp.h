@@ -6,7 +6,7 @@
 
 class testApp : public ofBaseApp{
 
-  public:
+	public:
 		void setup();
 		void update();
 		void draw();
@@ -28,8 +28,11 @@ class testApp : public ofBaseApp{
         vector<ofFbo*> fbos;
     
         ofxBlur blur;
+
     
-        ofImage alert;
+        ofTrueTypeFont	alert;
+        ofImage transparency;
+        ofImage playing;
     
 private:
     
@@ -58,6 +61,7 @@ private:
     float totalTime;
     bool flip;
     
+   
 
     
 };
