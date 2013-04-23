@@ -13,7 +13,11 @@ void testApp::setup(){
     
     
     thinkGear.setup();
-    ofAddListener(thinkGear.attentionChangeEvent, this, &testApp::attentionListener);  //updates whatever get from the function
+    ofAddListener(thinkGear.attentionChangeEvent, this, &testApp::attentionListener);
+    
+    alert.loadFont("font/DroidSansMono.ttf", 14, true, true);
+    alert.setLineHeight(18.0f);
+	alert.setLetterSpacing(1.037);
     
     
     attention = 0.0;
@@ -33,8 +37,8 @@ void testApp::setup(){
     flip = true;
     
     counter= 1;
-    threshold = 70;
-    openThreshold = 63;
+    threshold = 63;
+    openThreshold = 30;
     
 }
 
@@ -72,7 +76,10 @@ void testApp::update(){
     
     if (incident == true){
         gameplay.update();
-        
+
+        playing.loadImage("images/playing.png");
+    }
+    
         if (attention < threshold){
             danger = true;
         }
@@ -92,26 +99,30 @@ void testApp::update(){
             }
             
             if (currentTime - startTime < totalTime){
-                blur.setScale(ofMap(attention, 0.0, 100.0, 4, 1));
-                blur.setRotation(ofMap(attention, 0, 100.0, -PI, PI));
+                //blur.setScale(ofMap(attention, 0.0, 100.0, 4, 1));
+                //blur.setRotation(ofMap(attention, 0, 100.0, -PI, PI));
                 cout<<"current time:"<<endl;
                 cout<<currentTime<<endl;
                 cout<<"start time:"<<endl;
                 cout<<startTime<<endl;
                 extreme = true;
+                transparency.loadImage("images/transparency.png");
             }
             else {
                 gameplay.close();
                 gameover.update();
                 over = true;
-                
+                incident = false;
+                welcome = false;
+                 cout<<"over is true"<<endl;
             }
         }
         
-        if(over==true){
-        
+        if(over==true && incident == false && welcome ==false){
+
         if (gameover.getPosition() > 0.9){
             lastPlaySeq = true;
+            
         }
         
         if (lastPlaySeq == false) {
@@ -125,10 +136,15 @@ void testApp::update(){
             cout<<"game restarted"<<endl;
         }
         }
+        
+        if(welcome==true && over == false){
+            gameover.close();
+            welcomescreen.update();
+        }
     }
     
     
-}
+
 
 //--------------------------------------------------------------
 void testApp::draw(){
@@ -145,33 +161,51 @@ void testApp::draw(){
         blur.end();
     } else {
         if (attention < openThreshold) {
-            blur.draw();
-            blur.begin();
-            welcomescreen.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
-            welcomescreen.play();
-            blur.end();
+           blur.draw();
+           blur.begin();
+           welcomescreen.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
+           welcomescreen.play();
+           blur.end();
         }
     }
     
-    
-    
-    if (incident == true && welcome == false && extreme == true){
-        blur.draw();
-        blur.begin();
+
+    if (incident == true && welcome == false && over==false){
+        ofEnableAlphaBlending();
         gameplay.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
         gameplay.play();
-        blur.end();
+        playing.draw(20, 20);
+        ofDisableAlphaBlending();
+        
+        
+    }
+    
+    if (incident == true && welcome == false && extreme == true){
+        //blur.draw();
+        //blur.begin();
+        ofEnableAlphaBlending();
+        gameplay.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
+        gameplay.play();
+        float wave = sin(ofGetElapsedTimef());
+        transparency.draw(ofGetWidth()/2 + (wave * 100), 20);
+        
+        ofDisableAlphaBlending();
+       
+        //blur.end();
     }
     else if (incident == true && welcome == false){
         gameplay.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
         gameplay.play();
     }
     
-    if (over == true) {
+    if (over == true && lastPlaySeq == false) {
         gameover.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
         gameover.play();
+    } else if ( over==true && lastPlaySeq == true){
+        welcomescreen.draw(0.0, 0.0, ofGetWidth(), ofGetHeight());
+        welcomescreen.play();
     }
-    
+
 }
 
 
